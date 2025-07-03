@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.generics import CreateAPIView, ListCreateAPIView
 from rest_framework.response import Response
@@ -35,11 +35,6 @@ class AddAuthorView(ListCreateAPIView):
         queryset = Author.objects.all()
         serializer_class = AuthorSerializer
 
-
-
-
-
-
 @api_view(["PUT", "PATCH"])
 def update_author(request, pk):
     author = Author.objects.get(pk=pk)
@@ -53,6 +48,12 @@ def delete_author(request, pk):
     author.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+
 def greet(request, name):
     return render(request, 'index.html', {'name': name})
+
+class BookViewSet(viewsets.ModelViewSet):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
 
