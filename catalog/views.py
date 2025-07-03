@@ -3,6 +3,7 @@ from django.shortcuts import render
 from rest_framework import status, viewsets, permissions
 from rest_framework.decorators import api_view
 from rest_framework.generics import CreateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -81,7 +82,7 @@ class BookViewSet(viewsets.ModelViewSet):
 class BookImageViewSet(viewsets.ModelViewSet):
     queryset = BookImage.objects.all()
     serializer_class = BookImageSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_serializer_context(self):
         return{"book_id": self.kwargs["book_pk"]}
