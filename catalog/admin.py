@@ -10,7 +10,7 @@ class BookAdmin(admin.ModelAdmin):
     search_fields = ['title']
     list_per_page = 10
 
-
+@admin.register(models.BookImage)
 class BookImageAdmin(admin.ModelAdmin):
     list_display = ['book', 'image']
     list_display_links = ['image']

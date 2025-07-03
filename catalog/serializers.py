@@ -16,13 +16,24 @@ class BookSerializer(serializers.ModelSerializer):
     images = serializers.HyperlinkedRelatedField(
         view_name='image-detail',
         queryset=BookImage.objects.all(),
+        many=True,
     )
     class Meta:
         model = Book
-        fields = ['id', 'title', 'summary']
+        fields = ['id','title', 'summary','images','author']
 
 
 class AddBookSerializer(serializers.Serializer):
     class Meta:
         model = Book
-        fields = ['id','title', 'summary','images','author']
+        fields = ['id','title','isbn', 'summary']
+
+class BookImageSerializer(serializers.ModelSerializer):
+
+    def create(self, validated_data):
+        book_id = self.context['book_id']
+        return BookImage.objects.create(book_id=book_id, **validated_data)
+
+    class Meta:
+        model = BookImage
+        fields = ['id','image']

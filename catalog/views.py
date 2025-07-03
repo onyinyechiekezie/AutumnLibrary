@@ -1,13 +1,13 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, permissions
 from rest_framework.decorators import api_view
-from rest_framework.generics import CreateAPIView, ListCreateAPIView
+from rest_framework.generics import CreateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Book, Author
-from .serializers import BookSerializer, AddBookSerializer
+from .models import Book, Author, BookImage
+from .serializers import BookSerializer, AddBookSerializer, BookImageSerializer
 from .serializers import AuthorSerializer
 
 # Create your views here.
@@ -34,6 +34,15 @@ def get_authors(request):
 class AddAuthorView(ListCreateAPIView):
         queryset = Author.objects.all()
         serializer_class = AuthorSerializer
+
+class GetUpdateDeleteAuthorView(RetrieveUpdateDestroyAPIView):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+@api_view()
+def get_author(request):
+    author = Author.objects.all()
+    serializer = AuthorSerializer(author, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(["PUT", "PATCH"])
 def update_author(request, pk):
@@ -68,3 +77,11 @@ class BookViewSet(viewsets.ModelViewSet):
             return AddBookSerializer
         elif self.request.method == 'PUT':
             return AddBookSerializer
+
+class BookImageViewSet(viewsets.ModelViewSet):
+    queryset = BookImage.objects.all()
+    serializer_class = BookImageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_context(self):
+        return{"book_id": self.kwargs["book_pk"]}
