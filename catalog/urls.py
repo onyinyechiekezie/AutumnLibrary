@@ -19,6 +19,8 @@ urlpatterns = [
     # path("", views.get_books),
     path("authors/", views.AddAuthorView.as_view(), name="add_author"),
     path("authors/<int:pk>/", views.GetUpdateDeleteAuthorView.as_view()),
+    path("images/<int:pk>/", views.image_detail, name="image_detail"),
+    path("borrow-books/<int:pk>/", views.borrow_book, name="borrow-book"),
     # path("authors/<int:pk>/", views.update_author, name="update_author"),
     # path("authors/<int:pk>/delete/", views.delete_author, name="delete_author"),
     # path("get/authors/", views.get_authors, name="get_authors"),

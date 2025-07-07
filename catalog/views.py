@@ -1,14 +1,14 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework import status, viewsets, permissions
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import CreateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Book, Author, BookImage
-from .serializers import BookSerializer, AddBookSerializer, BookImageSerializer
+from .models import Book, Author, BookImage, BookInstance
+from .serializers import BookSerializer, AddBookSerializer, BookImageSerializer, BookInstanceSerializer
 from .serializers import AuthorSerializer
 
 # Create your views here.
@@ -90,3 +90,16 @@ class BookImageViewSet(viewsets.ModelViewSet):
         if not book_id:
             raise ValueError("book_id missing in kwargs!")
         serializer.save(book_id=book_id)
+@permission_classes([IsAuthenticated])
+@api_view(["POST"])
+def borrow_book(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+    user = request.user
+    data = BookInstanceSerializer(data=request.data)
+    data.is_valid(raise_exception=True)
+    book_instance = BookInstance()
+    book_instance.user = user
+    book_instance.book = book
+    book_instance.return_date = data.validated_data.get("return_date")
+    book_instance.save()
+    return Response({"message": "book borrowed successfully"}, status=status.HTTP_200_OK)
