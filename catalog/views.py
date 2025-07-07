@@ -82,7 +82,11 @@ class BookViewSet(viewsets.ModelViewSet):
 class BookImageViewSet(viewsets.ModelViewSet):
     queryset = BookImage.objects.all()
     serializer_class = BookImageSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
-    def get_serializer_context(self):
-        return{"book_id": self.kwargs["book_pk"]}
+    def perform_create(self,serializer):
+        # print("KWARGS IN PERFORM_CREATE:", self.kwargs)
+        book_id = self.kwargs.get('book_pk')
+        if not book_id:
+            raise ValueError("book_id missing in kwargs!")
+        serializer.save(book_id=book_id)
